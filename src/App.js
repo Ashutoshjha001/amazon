@@ -1,24 +1,48 @@
-import logo from './logo.svg';
-import './App.css';
+// import { Switch } from "@material-ui/core";
+import React, { useEffect } from "react";
+import "./App.css";
+import Header from "./Header";
+import Home from "./Home";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import Checkout from "./Checkout";
+import Login from "./Login";
+import { auth } from "./firebase";
 
 function App() {
+  useEffect(() => {
+    auth.onAuthStateChanged((authUser) => {
+      console.log("The user is >>>", authUser);
+      if (authUser) {
+        dispatchEvent({
+          type: "SET_USER",
+          user: authUser,
+        });
+      } else {
+        dispatchEvent({
+          type: "SET_USER",
+          user: null,
+        });
+      }
+    });
+  }, []);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="App">
+        <Switch>
+          <Route path="/signIn">
+            <Login />
+          </Route>
+          <Route path="/checkout">
+            <Header />
+            <Checkout />
+          </Route>
+          <Route path="/">
+            <Header />
+            <Home />
+          </Route>
+        </Switch>
+      </div>
+    </Router>
   );
 }
 
